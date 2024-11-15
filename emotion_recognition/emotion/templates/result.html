@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Analysis Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .percentages {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emotion Analysis Results</h1>
+    <img src="data:image/png;base64,{{ plot_img }}" alt="Emotion Probabilities Over Time">
+
+    <h2>Overall Emotion Percentages</h2>
+    <div class="percentages">
+        {% for emotion, percentage in overall_percentages.items() %}
+            <p><strong>{{ emotion.capitalize() }}:</strong> {{ "%.2f"|format(percentage) }}%</p>
+        {% endfor %}
+    </div>
+
+    <a href="/">Upload Another Video</a>
+</body>
+</html>

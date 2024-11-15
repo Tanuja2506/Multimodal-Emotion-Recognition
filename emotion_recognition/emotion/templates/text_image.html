@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Classifier App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .prediction-card {
+            background-color: #f0f9f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 10px 0;
+        }
+        .tab-active {
+            background-color: #f0f9f0;
+            border-bottom: 2px solid #10b981;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+<nav class="navbar">
+    <div class="logo">
+        <img src="https://cf-sparkai-live.s3.amazonaws.com/users/2nQiAheRVJuYmhS2sPtGIinTSkC/spark_ai/o_bg-remover-gen_2nQiMZhYEHat4zUrI2WHOqaJ3jg.png" alt="Emotion Recognition Logo">
+    </div>
+    <ul>
+        <li><a href="/" ><i class="fas fa-home"></i>Home</a></li>
+        <li><a href="/AboutUs"><i class="fas fa-info-circle"></i>About Us</a></li>
+        <li><a href="/Demo"><i class="fas fa-microchip"></i>Try Demo</a></li>
+        <li><a href="/Blog"><i class="fas fa-blog"></i>Blog</a></li>
+        <li><a href="/Contact"><i class="fas fa-envelope"></i>Contact</a></li>
+        {% if not logged_in %}
+            <li><a href="/login" class="login-btn"><i class="fas fa-sign-in-alt"></i>Login</a></li>
+        {% else %}
+            <li><a href="/profile"><i class="fas fa-user"></i>Profile</a></li>
+            <li><a href="/logout"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        {% endif %}
+    </ul>
+</nav>
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">Emotion Classifier App</h1>
+        <h2 class="text-2xl text-gray-700 mb-6">Emotion Detection in Text</h2>
+
+        <!-- Tab Navigation -->
+        <div class="flex mb-4 border-b">
+            <button onclick="switchTab('text')" id="textTab" class="px-4 py-2 tab-active">Text Input</button>
+            <button onclick="switchTab('image')" id="imageTab" class="px-4 py-2">Image Upload</button>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <form action="{{ url_for('predict_text_multimodal') }}" method="post" enctype="multipart/form-data">
+                <!-- Text Input Section -->
+                <div id="textSection">
+                    <textarea
+                        name="text"
+                        class="w-full h-32 p-4 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Type Here">{{ user_text if user_text else '' }}</textarea>
+                </div>
+
+                <!-- Image Upload Section -->
+                <div id="imageSection" class="hidden">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <input type="file"
+                               name="image"
+                               accept="image/*"
+                               class="w-full"
+                               onchange="previewImage(event)">
+                        <img id="preview" class="mt-4 mx-auto max-h-48 hidden">
+                    </div>
+                </div>
+
+                <button
+                    type="submit"
+                    class="mt-4 px-6 py-2 bg-red-400 text-white rounded-md hover:bg-red-500 transition-colors">
+                    Submit
+                </button>
+            </form>
+        </div>
+
+        {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">{{ error }}</span>
+        </div>
+        {% endif %}
+
+        {% if prediction %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="prediction-card">
+                <h3 class="text-lg font-semibold text-green-800 mb-3">Original Text</h3>
+                <p class="text-gray-700">{{ user_text }}</p>
+            </div>
+
+            <div class="prediction-card">
+                <h3 class="text-lg font-semibold text-green-800 mb-3">Prediction Probability</h3>
+                <img src="data:image/png;base64,{{ plot_url }}" alt="Prediction Probabilities" class="w-full">
+            </div>
+
+            <div class="prediction-card md:col-span-2">
+                <h3 class="text-lg font-semibold text-green-800 mb-3">Prediction</h3>
+                <p class="text-xl">{{ prediction }}{% if prediction == 'joy' %} 😂{% endif %}</p>
+                <p class="text-sm text-gray-600 mt-2">Confidence: {{ confidence }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const textTab = document.getElementById('textTab');
+            const imageTab = document.getElementById('imageTab');
+            const textSection = document.getElementById('textSection');
+            const imageSection = document.getElementById('imageSection');
+
+            if (tab === 'text') {
+                textTab.classList.add('tab-active');
+                imageTab.classList.remove('tab-active');
+                textSection.classList.remove('hidden');
+                imageSection.classList.add('hidden');
+            } else {
+                imageTab.classList.add('tab-active');
+                textTab.classList.remove('tab-active');
+                imageSection.classList.remove('hidden');
+                textSection.classList.add('hidden');
+            }
+        }
+
+        function previewImage(event) {
+            const preview = document.getElementById('preview');
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function() {
+                preview.src = reader.result;
+                preview.classList.remove('hidden');
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>

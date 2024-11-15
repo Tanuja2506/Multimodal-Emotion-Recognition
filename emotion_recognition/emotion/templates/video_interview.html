@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Interview</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-3xl mx-auto">
+            <h1 class="text-3xl font-bold mb-6 text-center">Video Interview</h1>
+
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">Instructions:</h2>
+                <ul class="list-disc list-inside mb-4">
+                    <li>The interview will last for 50 seconds</li>
+                    <li>Please ensure you're in a well-lit environment</li>
+                    <li>Face the camera directly</li>
+                    <li>Try to maintain a natural expression</li>
+                </ul>
+
+                <div class="aspect-w-16 aspect-h-9 bg-black rounded-lg overflow-hidden">
+                    <img src="{{ url_for('video_feed') }}" class="w-full">
+                </div>
+            </div>
+
+            <div id="countdown" class="text-center text-2xl font-bold mb-6">
+                Interview will automatically end in <span id="timer">50</span> seconds
+            </div>
+
+            <div class="text-center">
+                <button onclick="window.location.href='/video_interview_results'"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    View Results
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Countdown timer
+        let timeLeft = 50;
+        const timerElement = document.getElementById('timer');
+
+        const timer = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = timeLeft;
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                window.location.href = '/video_interview_results';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
